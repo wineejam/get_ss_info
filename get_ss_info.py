@@ -1,6 +1,7 @@
 #!/bin/env python
 #coding:utf-8
-#Author:WineeJam @2015012-24
+#Author:WineeJam @2015-12-24
+#modify: 2016-01-04
 
 
 import json,os,requests,sys,platform
@@ -85,15 +86,21 @@ class get_ss_info():
             cmd = "ping -c 5 -i.01 -W 1 -s 1024 -f %s"%str(ip)
             cmd_out = commands.getoutput(cmd)
             tmp = cmd_out.split("\n")[-2:]
-            loss = int(tmp[0].split(',')[2].split()[0].replace("%",""))
-            delay = int(tmp[-1].split("/")[4].split(".")[0])
+            try:
+                loss = int(tmp[0].split(',')[2].split()[0].replace("%",""))
+                delay = int(tmp[-1].split("/")[4].split(".")[0])
+            except IndexError:
+                cmd_out = [100,0]
             cmd_out = [loss,delay]
         elif sys_info == "Windows":
-            cmd = "chcp 437  && ping -n 5 -w 100 -l 1024 %s"%str(ip)
+            cmd = "chcp 437  && ping -n 5 -w 500 -l 1024 %s"%str(ip)
             cmd_out = os.popen(cmd).read()
             tmp = cmd_out.split("\n")[-4:]
-            loss = int(tmp[0].split("(")[1].split()[0].replace("%",""))
-            delay = int(tmp[-2].split()[-1].replace("ms",""))
+            try:
+                loss = int(tmp[0].split("(")[1].split()[0].replace("%",""))
+                delay = int(tmp[-2].split()[-1].replace("ms",""))
+            except IndexError:
+                cmd_out = [100,0]
             cmd_out = [loss,delay]
         return cmd_out
 
